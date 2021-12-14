@@ -5,7 +5,7 @@ module BuscaCep
         module MechanizeUtils
             @mechanize = nil
 
-            def mechanize                
+            def mechanize
                 @mechanize = Mechanize.new if @mechanize.nil?
 
                 @mechanize
