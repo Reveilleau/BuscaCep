@@ -1,6 +1,7 @@
 require 'json'
 require_relative '../modules/mechanize_utils.rb'
 
+
 module BuscaCep
     module App
         class BuscaCepRequests
@@ -8,19 +9,20 @@ module BuscaCep
 
             def search_cep(cep)
 
-                url = 'https://buscacepinter.correios.com.br/app/endereco/carrega-cep-endereco.php'
+                url = 'https://buscacepinter.correios.com.br/app/cep/carrega-cep.php'
 
                 params = {
-                    'pagina'         => '/app/endereco/index.php',
-                    'cepaux'          => '',
-                    'mensagem_alerta' => '',
-                    'endereco'        => cep.to_s,
-                    'tipoCEP'         => 'ALL',
+                      'mensagem_alerta'   => '',
+                      'cep'             => cep,
+                      'cepaux'          => ''
+                    # 'pagina'          => '/app/endereco/index.php',
+                    # 'cepaux'          => '',
+                    # 'mensagem_alerta' => '',
+                    # 'endereco'        => cep,
+                    # 'tipoCEP'         => 'LOG',
                 }
-                
                 page = mechanize.post(url, params)
                 page = JSON.parse(page.body)
-
             end
 
         end
