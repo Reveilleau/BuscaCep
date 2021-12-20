@@ -5,6 +5,10 @@ include  StepMachine
 
 busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
 
+    ZIP_CODE_TYPE = {
+        '1' => 'Esta cidade possui CEP unico',
+        '2' => 'Esta cidade possui CEP por logradouro'
+    }
 
     STATES = {
         'AC' => 'Acre',
@@ -39,35 +43,41 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
     step(:insert_zip_code) do
         puts "====INSERT CEP===="
         print 'CEP:'
-        @cep = gets.chomp.to_s
+        @zip_code = gets.chomp.to_s
     end.validate do |step|
-        step.errors << "the #{@cep} is a Invalid input!" if step.result.match(/[0-9]{8}/).nil?
-        @cep.insert(5,'-') if @cep[5] != '-'
+        @zip_code.insert(5,'-') if !@zip_code.include?('-')
+        step.errors << 'The zip code must contain 8 digits' if @zip_code.length != 9 
+        #step.errors << "the #{@zip_code} is a Invalid input!" if step.result.match(/[0-9]{5}-[0-9]{3}/).nil?
     end
 
 
     step(:zip_code_search) do
-        @result = busca_cep_requests.search_cep(@cep)
+        @result = busca_cep_requests.search_cep(@zip_code)
     end.validate do |step|
-        step.errors << "CEP #{@cep} NÃO ENCONTRAO" if !step.result['dados'].first['logradouroDNEC'].match(/O CEP [0-9]{5}-[0-9]{3} NAO FOI ENCONTRADO/).nil?
+        step.errors << "CEP #{@zip_code} NÃO ENCONTRAO" if !step.result['dados'].first['logradouroDNEC'].match(/O CEP [0-9]{5}-[0-9]{3} NAO FOI ENCONTRADO/).nil?
         unless step.result['dados'].first['logradouroDNEC'].match(/CEP [0-9]{5}-[0-9]{3} DESMEMBRADO/).nil?
             @zip_code_data = step.result['dados'][1]
         else
             @zip_code_data = step.result['dados'].first
         end
     end.success do |step|
-        @city         = @zip_code_data['localidade']
-        @place        = @zip_code_data['logradouroDNEC']
-        @neighborhood = @zip_code_data['bairro']
-        @state        = @zip_code_data['uf']
+        @city          = @zip_code_data['localidade']
+        @zip_code_type = @zip_code_data['tipoCep'] 
+        @place         = @zip_code_data['logradouroDNEC']
+        @neighborhood  = @zip_code_data['bairro']
+        @state         = @zip_code_data['uf']
     end
 
     step(:result) do
         puts '=====RESULT====='
         puts "Cidade: #{@city}"
-        puts "Logradouro: #{@place}"
-        puts "Bairro: #{@neighborhood}"
         puts "Estado: #{STATES[@state]}"
+        if @zip_code_type.eql?('2')
+            puts "Logradouro: #{@place}"
+            puts "Bairro: #{@neighborhood}"
+        end
+        puts ZIP_CODE_TYPE[@zip_code_type]
+
         puts "================"
     end
 
@@ -76,6 +86,7 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         unless f.step.errors.empty?
             puts "======ERROR======"
             puts "The following error occurred during zip code search: #{f.step.errors.join}"
+            f.go_to :insert_zip_code
         end
     end
 
