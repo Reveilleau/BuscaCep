@@ -59,26 +59,29 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
             @zip_code_data = step.result['dados'][1]
         else
             @zip_code_data = step.result['dados'].first
-        end
+        end 
+        
+        @place = @zip_code_data['logradouroDNEC'].include?('até') ? @zip_code_data['logradouroDNEC'].gsub(/-.até.?*/,'') : @zip_code_data['logradouroDNEC']
+
     end.success do |step|
         @city          = @zip_code_data['localidade']
-        @zip_code_type = @zip_code_data['tipoCep'] 
-        @place         = @zip_code_data['logradouroDNEC']
+        @zip_code_type = @zip_code_data['tipoCep']
         @neighborhood  = @zip_code_data['bairro']
         @state         = @zip_code_data['uf']
     end
 
     step(:result) do
-        puts '=====RESULT====='
-        puts "Cidade: #{@city}"
+        puts "=====RESULT====="
+        puts "\nCidade: #{@city}"
         puts "Estado: #{STATES[@state]}"
         if @zip_code_type.eql?('2')
             puts "Logradouro: #{@place}"
             puts "Bairro: #{@neighborhood}"
         end
-        puts ZIP_CODE_TYPE[@zip_code_type]
 
-        puts "================"
+        puts "\nObservação: #{ZIP_CODE_TYPE[@zip_code_type]}"
+
+        puts "\n================"
     end
 
     on_step_failure do |f|
