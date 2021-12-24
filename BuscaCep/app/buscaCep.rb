@@ -58,7 +58,7 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         unless step.result['dados'].first['logradouroDNEC'].match(/CEP [0-9]{5}-[0-9]{3} DESMEMBRADO/).nil?
             @zip_code_data = step.result['dados'][1]
         else
-            @zip_code_data = step.result['dados'].first
+            @zip_code_data = step.result['dados'][0]
         end 
         
         @place = @zip_code_data['logradouroDNEC'].include?('até') ? @zip_code_data['logradouroDNEC'].gsub(/-.até.?*/,'') : @zip_code_data['logradouroDNEC']
@@ -68,6 +68,11 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         @zip_code_type = @zip_code_data['tipoCep']
         @neighborhood  = @zip_code_data['bairro']
         @state         = @zip_code_data['uf']
+    end
+
+    step(:collect_weather_data) do
+        binding.pry
+        busca_cep_requests.collect_local_weather
     end
 
     step(:result) do
