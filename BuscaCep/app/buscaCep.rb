@@ -47,12 +47,11 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
     end.validate do |step|
         @zip_code.insert(5,'-') if !@zip_code.include?('-')
         step.errors << 'The zip code must contain 8 digits' if @zip_code.length != 9 
-        #step.errors << "the #{@zip_code} is a Invalid input!" if step.result.match(/[0-9]{5}-[0-9]{3}/).nil?
     end
 
 
     step(:zip_code_search) do
-        @result = busca_cep_requests.search_cep(@zip_code)
+        busca_cep_requests.search_cep(@zip_code)
     end.validate do |step|
         step.errors << "CEP #{@zip_code} NÃO ENCONTRAO" if !step.result['dados'].first['logradouroDNEC'].match(/O CEP [0-9]{5}-[0-9]{3} NAO FOI ENCONTRADO/).nil?
         unless step.result['dados'].first['logradouroDNEC'].match(/CEP [0-9]{5}-[0-9]{3} DESMEMBRADO/).nil?
@@ -68,11 +67,27 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         @zip_code_type = @zip_code_data['tipoCep']
         @neighborhood  = @zip_code_data['bairro']
         @state         = @zip_code_data['uf']
+        if @city.include?(' ')
+            @city_formated = @city.delete(' ')
+        else
+            @city_formated = @city
+        end
     end
 
-    step(:collect_weather_data) do
-        binding.pry
-        busca_cep_requests.collect_local_weather
+    step(:search_city_weather_json) do
+        busca_cep_requests.search_city_weather_json(@city)
+    end.validate do |step|
+        step.errors << 'Resultado não encontrado' if step.result.first['response']['success'].eql?('true')
+    end.success do |step|
+        @city_code = step.result.first['response']['data'].first['idcity']
+    end
+
+    step(:city_weather_condition_page) do
+        busca_cep_requests.city_weather_condition_page(@city_code, @city_formated, @state)
+    end.success do |step|
+        @current_temperature = step.result.search('span[class="-bold -gray-dark-2 -font-55 _margin-l-20 _center"]').text.delete("\n")
+        @current_weather     = step.result.search('span[class="col"]').text
+        @thermal_sensation   = step.result.search('span[class=""]').text.downcase.delete("\n").gsub!(/[a-sçã-]/, '').delete(' ')
     end
 
     step(:result) do
@@ -84,8 +99,11 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
             puts "Bairro: #{@neighborhood}"
         end
 
-        puts "\nObservação: #{ZIP_CODE_TYPE[@zip_code_type]}"
-
+        puts "Observação: #{ZIP_CODE_TYPE[@zip_code_type]}"
+        puts "\n====INFORMAÇÃO METEREOLÓGICA===="
+        puts "\nClima: #{@current_weather}"
+        puts "Temperatura: #{@current_temperature} graus Celsius"
+        puts "Sensação termica: #{@current_weather} graus Celsius"
         puts "\n================"
     end
 
@@ -94,7 +112,6 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         unless f.step.errors.empty?
             puts "======ERROR======"
             puts "The following error occurred during zip code search: #{f.step.errors.join}"
-            f.go_to :insert_zip_code
         end
     end
 
