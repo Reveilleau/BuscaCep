@@ -101,9 +101,9 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
 
         puts "Observação: #{ZIP_CODE_TYPE[@zip_code_type]}"
         puts "\n====INFORMAÇÃO METEREOLÓGICA===="
-        puts "\nClima: #{@current_weather}"
-        puts "Temperatura: #{@current_temperature} graus Celsius"
-        puts "Sensação termica: #{@thermal_sensation} graus Celsius"
+        puts "\n#{@current_weather}"
+        puts "Temperatura de #{@current_temperature} graus Celsius"
+        puts "Sensação termica de #{@thermal_sensation} graus Celsius"
         puts "\n================"
     end
 

@@ -15,10 +15,10 @@ module BuscaCep
                     'mensagem_alerta'   => '',
                     'cep'             => cep,
                     'cepaux'          => ''
-        
+
                 }
-                page = mechanize.post(url, params)
-                page = JSON.parse(page.body)
+
+                JSON.parse(mechanize.post(url, params).body)
             end
 
             def search_city_weather_json(location)
@@ -32,14 +32,14 @@ module BuscaCep
                 options = {
                     'referer' => 'https://www.climatempo.com.br/'
                 }
-                page = mechanize.post(url, params, options)
-                page = JSON.parse(page.body)
+
+                JSON.parse(mechanize.post(url, params, options).body)
             end
 
             def city_weather_condition_page(city_code, city_formated, state)
 
                 url = "https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/#{city_code}/#{city_formated.downcase}-#{state.downcase}"
-                page = mechanize.get(url)
+                mechanize.get(url)
 
             end
 
