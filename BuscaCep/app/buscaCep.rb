@@ -3,41 +3,41 @@ require 'step_machine'
 require 'pry'
 include  StepMachine
 
-busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
+busca_cep_requests = BuscaCepRequests.new
 
     ZIP_CODE_TYPE = {
-        '1' => 'Esta cidade possui CEP unico',
-        '2' => 'Esta cidade possui CEP por logradouro'
+        '1': 'Esta cidade possui CEP unico',
+        '2': 'Esta cidade possui CEP por logradouro'
     }
 
     STATES = {
-        'AC' => 'Acre',
-        'AL' => 'Alagoas',
-        'AP' => 'Amapá',
-        'AM' => 'Amazonas',
-        'BA' => 'Bahia',
-        'CE' => 'Ceará',
-        'DF' => 'Distrito Federal',
-        'ES' => 'Espírito Santo',
-        'GO' => 'Goías',
-        'MA' => 'Maranhão',
-        'MT' => 'Mato Grosso',
-        'MS' => 'Mato Grosso o Sul',
-        'MG' => 'Minas Gerais',
-        'PA' => 'Pará',
-        'PB' => 'Paraíba',
-        'PR' => 'Paraná',
-        'PE' => 'Pernambuco',
-        'PI' => 'Piauí',
-        'RJ' => 'Rio de Janeiro',
-        'RN' => 'Rio Grande do Norte',
-        'RS' => 'Rio Grande do Sul',
-        'RO' => 'Rondônia',
-        'RR' => 'Roráima',
-        'SC' => 'Santa Catarina',
-        'SP' => 'São Paulo',
-        'SE' => 'Sergipe',
-        'TO' => 'Tocantins',
+        'AC': 'Acre',
+        'AL': 'Alagoas',
+        'AP': 'Amapá',
+        'AM': 'Amazonas',
+        'BA': 'Bahia',
+        'CE': 'Ceará',
+        'DF': 'Distrito Federal',
+        'ES': 'Espírito Santo',
+        'GO': 'Goías',
+        'MA': 'Maranhão',
+        'MT': 'Mato Grosso',
+        'MS': 'Mato Grosso o Sul',
+        'MG': 'Minas Gerais',
+        'PA': 'Pará',
+        'PB': 'Paraíba',
+        'PR': 'Paraná',
+        'PE': 'Pernambuco',
+        'PI': 'Piauí',
+        'RJ': 'Rio de Janeiro',
+        'RN': 'Rio Grande do Norte',
+        'RS': 'Rio Grande do Sul',
+        'RO': 'Rondônia',
+        'RR': 'Roráima',
+        'SC': 'Santa Catarina',
+        'SP': 'São Paulo',
+        'SE': 'Sergipe',
+        'TO': 'Tocantins',
     }
 
     step(:insert_zip_code) do
@@ -59,7 +59,7 @@ busca_cep_requests = BuscaCep::App::BuscaCepRequests.new
         else
             @zip_code_data = step.result['dados'][0]
         end 
-        
+
         @place = @zip_code_data['logradouroDNEC'].include?('até') ? @zip_code_data['logradouroDNEC'].gsub(/-.até.?*/,'') : @zip_code_data['logradouroDNEC']
 
     end.success do |step|
