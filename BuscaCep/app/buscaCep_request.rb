@@ -5,39 +5,40 @@ class BuscaCepRequests
 
         def search_cep(cep)
 
-        url = 'https://buscacepinter.correios.com.br/app/cep/carrega-cep.php'
+            url = 'https://buscacepinter.correios.com.br/app/cep/carrega-cep.php'
 
-        params = {
-            'mensagem_alerta'   => '',
-            'cep'             => cep,
-            'cepaux'          => ''
+            params = {
+                'mensagem_alerta'   => '',
+                'cep'             => cep,
+                'cepaux'          => ''
 
-        }
+            }
 
-        JSON.parse(mechanize.post(url, params).body)
-    end
+            JSON.parse(mechanize.post(url, params).body)
 
-    def search_city_weather_json(location)
+        end
 
-        url = 'https://www.climatempo.com.br/json/busca-por-nome'
+        def search_city_weather_json(location)
 
-        params = {
-            'name' => location
-        }
+            url = 'https://www.climatempo.com.br/json/busca-por-nome'
 
-        options = {
-            'referer' => 'https://www.climatempo.com.br/'
-        }
+            params = {
+                'name' => location
+            }
 
-        JSON.parse(mechanize.post(url, params, options).body)
-    end
+            options = {
+                'referer' => 'https://www.climatempo.com.br/'
+            }
 
-    def city_weather_condition_page(city_code, city_formated, state)
+            JSON.parse(mechanize.post(url, params, options).body)
+        end
 
-        url = "https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/#{city_code}/#{city_formated.downcase}-#{state.downcase}"
-        mechanize.get(url)
+        def city_weather_condition_page(city_code, city_formated, state)
 
-    end
+            url = "https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/#{city_code}/#{city_formated.downcase}-#{state.downcase}"
+            mechanize.get(url)
+
+        end
 
 
 end

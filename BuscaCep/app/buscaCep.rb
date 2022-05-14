@@ -3,7 +3,7 @@ require 'step_machine'
 require 'pry'
 include  StepMachine
 
-busca_cep_requests = BuscaCepRequests
+busca_cep_requests = BuscaCepRequests.new
 
     ZIP_CODE_TYPE = {
         '1' => 'Esta cidade possui CEP unico',
@@ -108,7 +108,6 @@ busca_cep_requests = BuscaCepRequests
     end
 
     on_step_failure do |f|
-        #binding.pry unless f.step.errors.empty?
         unless f.step.errors.empty?
             puts "======ERROR======"
             puts "The following error occurred during zip code search: #{f.step.errors.join}"
