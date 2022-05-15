@@ -1,44 +1,35 @@
-require_relative '../utils/mechanize_utils.rb'
+require_relative '../utils/requests'
 
-class BuscaCepRequests
-    include Utils::MechanizeUtils
+module BuscaCepRequests
+    include UtilsRequest
 
-        def search_cep(cep)
-
-            url = 'https://buscacepinter.correios.com.br/app/cep/carrega-cep.php'
-
-            params = {
+    dynamic_request(:search_cep) do
+        {
+            url: 'https://buscacepinter.correios.com.br/app/cep/carrega-cep.php',
+            params: {
                 'mensagem_alerta'   => '',
-                'cep'             => cep,
-                'cepaux'          => ''
-
+                'cep'               => 85601000,
+                'cepaux'            => ''
             }
+        }
+    end
 
-            JSON.parse(mechanize.post(url, params).body)
-
-        end
-
-        def search_city_weather_json(location)
-
-            url = 'https://www.climatempo.com.br/json/busca-por-nome'
-
-            params = {
-                'name' => location
-            }
-
-            options = {
+    dynamic_request(:search_city_weather) do
+        {
+            url: 'https://www.climatempo.com.br/json/busca-por-nome',
+            params: {
+                'name' => 'Francisco Beltrao'
+            },
+            options: {
                 'referer' => 'https://www.climatempo.com.br/'
             }
+        }
+    end
 
-            JSON.parse(mechanize.post(url, params, options).body)
-        end
-
-        def city_weather_condition_page(city_code, city_formated, state)
-
-            url = "https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/#{city_code}/#{city_formated.downcase}-#{state.downcase}"
-            mechanize.get(url)
-
-        end
-
+    dynamic_request(:city_weather_condition_page) do
+        {
+            url: "https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/#{city_code}/#{city_formated.downcase}-#{state.downcase}"
+        }
+    end
 
 end
